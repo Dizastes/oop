@@ -1,0 +1,215 @@
+using System;
+
+namespace LAB2
+{
+    class Horse
+    {
+        private string name;
+        public Horse(string name)
+        {
+            this.name = name;
+        }
+        public string Name
+        {
+            get { return name; }
+        }
+        public void apple()
+        {
+            Console.WriteLine($"{Name} *ест яблоко*");
+        }
+    }
+
+    class Pegas : Horse
+    {
+        public Pegas(string name) : base(name)
+        {
+        }
+        public void fly()
+        {
+            Console.WriteLine($"{Name} *типо летит вжух вжух*");
+        }
+    }
+
+    class Pet
+    {
+        protected string name;
+        protected int ves;
+        protected int age;
+        protected bool sex;
+        public string Name
+        {
+            get { return name; }
+        }
+        public int Ves
+        {
+            get { return ves; }
+        }
+        public string Sex
+        {
+            get { if (sex) return "M"; else return "W"; }
+        }
+        public int Age
+        {
+            get { return age; }
+        }
+        public void info()
+        {
+            Console.WriteLine($"Имя: {Name} ,Вес: {Ves}, Пол: {Sex}, Возраст: {Age}");
+        }
+    }
+
+    class Cat : Pet
+    {
+        public void Kusi()
+        {
+            Console.WriteLine($"{Name} укусил вас");
+        }
+        public Cat(string name, int ves, int age, bool sex)
+        {
+            this.name = name;
+            base.ves = ves;
+            base.age = age;
+            base.sex = sex;
+        }
+    }
+
+    class Dog : Pet
+    {
+        public void hvost()
+        {
+            Console.WriteLine($"{Name} пытается поймать свой хвост");
+        }
+        public Dog(string name, int ves, int age, bool sex)
+        {
+            this.name = name;
+            base.ves = ves;
+            base.age = age;
+            base.sex = sex;
+        }
+    }
+
+    class Fish
+    {
+        private string name;
+        protected bool gills = true;
+        protected bool fins = true;
+        public Fish(string name)
+        {
+            this.name = name;
+        }
+
+        public string Name
+        {
+            get { return name; }
+        }
+        
+        public void swim()
+        {
+            if (fins)
+            {
+               Console.WriteLine($"{Name} плывет буль буль");
+            }
+            else
+            {
+                Console.WriteLine($"{Name} утонул");
+            }
+        }
+        public void eat()
+        {
+            Console.WriteLine($"{Name} ест");
+        }
+        public void breatheUnderwater()
+        {
+            if (gills)
+            {
+                Console.WriteLine($"{Name} дышит через жабры");
+            }
+            else
+            {
+                Console.WriteLine($"{Name} задохнулся");
+            }
+        }
+    }
+
+    class Animal : Fish
+    {
+        protected int feet = 4;
+        public Animal(string name) : base(name)
+        {
+            gills = false;
+            fins = false;
+        }
+        public void breathe()
+        {
+            Console.WriteLine($"{Name} дышит");
+        }
+        public void drinking()
+        {
+            Console.WriteLine($"{Name} пьет");
+        }
+        public void eating()
+        {
+            Console.WriteLine($"{Name} ест");
+        }
+    }
+
+    class Ape : Animal
+    {
+        protected int hands = 2;
+        protected string furColor;
+        public Ape(string name, string furColor) : base(name)
+        {
+            this.furColor = furColor;
+            feet = 2;
+        }
+        public void EatBanana()
+        {
+            Console.WriteLine($"{Name} ест банан вкусный");
+        }
+        public void SleepOnTree()
+        {
+            Console.WriteLine($"  {Name} спит на дереве");
+        }
+    }
+
+    class Human : Ape
+    {
+        private string secondName;
+        public Human(string name, string furColor, string secondName) : base(name, furColor)
+        {
+            this.secondName = secondName;
+        }
+        public void uch()
+        {
+            Console.WriteLine($"{Name} грызет гранит науки");
+        }
+        public void talking()
+        {
+            Console.WriteLine($"{Name} говорит на татарском");
+        }
+        public void gic()
+        {
+            Console.WriteLine($"{Name} проходит дарк соулс на платину и смотрит берсерка");
+        }
+        public void info()
+        {
+            Console.WriteLine($"Это {secondName} {Name} и у него {furColor} цвет волос");
+        }
+    }
+
+    class World
+    {
+        static void Main()
+        {
+            Pegas Karkar = new Pegas("Каркарыч");
+            Karkar.fly();
+
+            Cat Barsik = new Cat("Барсик", 5, 6, true);
+            Barsik.Kusi();
+
+            Human Vasya = new Human("Вася", "черный", "Пупкин");
+            Console.WriteLine(Vasya.Name);
+            Vasya.info();
+        }
+    }
+}
