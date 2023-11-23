@@ -1,0 +1,132 @@
+using System;
+
+namespace LAB4
+{
+    class Program
+    {
+        abstract class Pet
+        {
+            public string name;
+            public int age;
+            public bool hungry;
+            public Pet(string name, int age, bool hungry)
+            {
+                this.name = name;
+                this.age = age;
+                this.hungry = hungry;
+            }
+
+            public abstract void voice();
+        }
+
+        class Snake : Pet
+        {
+            public Snake(string name, int age, bool hungry) : base(name, age, hungry)
+            {
+            }
+            public override void voice()
+            {
+                Console.WriteLine("СССССССССССССссссссссшшшшшшш");
+            }
+        }
+
+        class Dog : Pet
+        {
+            public Dog(string name, int age, bool hungry) : base(name, age, hungry)
+            {
+            }
+            public override void voice()
+            {
+                Console.WriteLine("Вуф Вуф");
+            }
+        }
+
+        class PatrolDog : Pet
+        {
+            public PatrolDog(string name, int age, bool hungry) : base(name, age, hungry)
+            {
+            }
+            public override void voice()
+            {
+                Console.WriteLine("Маршал! Крепыш! Гончик! Роки! Зума! Скай! Мы уже в пути! Наш отряд, шесть щенят, героев настоящих, День и ночь вам помочь летит патруль щенячий!");
+            }
+        }
+
+        class Cat : Pet
+        {
+            public Cat(string name, int age, bool hungry) : base(name, age, hungry)
+            {
+            }
+            public override void voice()
+            {
+                Console.WriteLine($"Миииииииияяяууууу");
+            }
+        }
+
+        class Fish : Pet
+        {
+            public Fish(string name, int age, bool hungry) : base(name, age, hungry)
+            {
+            }
+            public override void voice()
+            {
+                Console.WriteLine("*А что вы ждете рыбы не говорят*");
+            }
+        }
+
+        interface PassengersAuto
+        {
+            void Pas();
+        }
+
+        interface CargoAuto
+        {
+            void Gruz();
+        }
+
+        class Sedan : PassengersAuto
+        {
+            private int kol;
+
+            public Sedan(int kol)
+            {
+                this.kol = kol;
+            }
+            public void Pas()
+            {
+                Console.WriteLine($"Вмещает {kol} человек");
+            }
+        }
+        class Truck : CargoAuto
+        {
+            private int ves;
+            public Truck(int ves)
+            {
+                this.ves = ves;
+            }
+            public void Gruz()
+            {
+                Console.WriteLine($"Вмещает {ves} кг");
+            }
+        }
+
+        class Pickup : PassengersAuto, CargoAuto
+        {
+            private int ves;
+            private int kol;
+            public Pickup(int kol, int ves)
+            {
+                this.kol = kol;
+                this.ves = ves;
+            }
+            public void Pas()
+            {
+                Console.WriteLine($"Вмещает {kol} человек");
+            }
+            public void Gruz()
+            {
+                Console.WriteLine($"Вмещает {ves} кг");
+            }
+        }
+    }
+}
