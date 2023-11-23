@@ -1,0 +1,175 @@
+using System;
+
+namespace LAB3
+{
+    class Cow
+    {
+        public virtual void getName()
+        {
+            Console.WriteLine("Я корова");
+        }
+    }
+
+    class Kit : Cow
+    {
+        public override void getName()
+        {
+            Console.WriteLine("Я не корова, Я – кит");
+        }
+    }
+
+    class Koshka
+    {
+        public string name { get; set; }
+        public int age { get; set; }
+
+        public Koshka(string name, int age)
+        {
+            this.name = name;
+            this.age = age;
+        }
+    }
+
+    class Sobaka : Koshka
+    {
+        public Sobaka(string name, int age) : base(name, age)
+        {
+        }
+    }
+
+    class Ptica : Koshka
+    {
+        public Ptica(string name, int age) : base(name, age)
+        {
+        }
+    }
+
+    class Lampa : Koshka
+    {
+        public Lampa(string manufacturer, int age) : base(manufacturer, age)
+        {
+        }
+    }
+
+    class Cat
+    {
+        public string name { get; set; }
+        public int age { get; set; }
+        public Cat(string name, int age)
+        {
+            this.name = name;
+            this.age = age;
+        }
+        public virtual dynamic GetChild()
+        {
+            Cat child = new Cat("Kitten", 0);
+            return child;
+        }
+    }
+    class Dog : Cat
+    {
+        public Dog(string name, int age) : base(name, age)
+        {
+        }
+        public override dynamic GetChild()
+        {
+            Dog child = new Dog("Poppy", 0);
+            return child;
+        }
+    }
+   
+    class Overload
+    {
+        public void print(int s)
+        {
+            Console.WriteLine(s);
+        }
+        public void print(string s)
+        {
+            Console.WriteLine(s);
+        }
+        public void print(bool s)
+        {
+            Console.WriteLine(s);
+        }
+        public void print(double s)
+        {
+            Console.WriteLine(s);
+        }
+        public void print(char s)
+        {
+            Console.WriteLine(s);
+        }
+        public static int min(int a, int b)
+        {
+            return Math.Min(a, b);
+        }
+        public static long min(long a, long b)
+        {
+            return Math.Min(a, b);
+        }
+        public static double min(double a, double b)
+        {
+            return Math.Min(a, b);
+        }
+        public static int max(int a, int b)
+        {
+            return Math.Max(a, b);
+        }
+        public static long max(long a, long b)
+        {
+            return Math.Max(a, b);
+        }
+        public static double max(double a, double b)
+        {
+            return Math.Max(a, b);
+        }
+    }
+    class Program
+    {
+        static public void Determinant(object obj)
+        {
+            Type objectType = obj.GetType();
+            Console.WriteLine($"Относится к классу: {objectType.Name}");
+        }
+        static void Main()
+        {
+            Kit kit = new Kit();
+            Cow cow = new Cow();
+            cow.getName();
+            kit.getName();
+
+            Koshka koshka = new Koshka("Риния", 5);
+            Determinant(koshka);
+
+            Sobaka sobaka = new Sobaka("Пурсена", 5);
+            Determinant(sobaka);
+
+            Ptica ptica = new Ptica("Хаул", 1);
+            Determinant(ptica);
+
+            Lampa lampa = new Lampa("Что тут забыла лампа", 3);
+            Determinant(lampa);
+
+            Cat cat = new Cat("Kot", 4);
+            Cat kitten = cat.GetChild();
+            Console.WriteLine("У вас родился " + kitten.GetType().Name);
+            Dog dog = new Dog("Dog", 6);
+            Dog poppy = dog.GetChild();
+            Console.WriteLine("У вас родился " + poppy.GetType().Name);
+
+            Overload overload = new Overload();
+            overload.print(6);
+            overload.print("String");
+            overload.print(1.1);
+            overload.print('S');
+            overload.print(true);
+            Console.WriteLine(Overload.min(1, 9));
+            Console.WriteLine(Overload.min(1.9, 9.1));
+            Console.WriteLine(Overload.min(9000000000000000000, 900000000000000000));
+            Console.WriteLine(Overload.max(1, 9));
+            Console.WriteLine(Overload.max(1.9, 9.1));
+            Console.WriteLine(Overload.max(9000000000000000000, 900000000000000000));
+        }
+    }
+}
