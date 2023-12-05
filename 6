@@ -1,0 +1,190 @@
+using System;
+
+namespace lab_pro_fabriki
+{
+    class Program
+    {
+        static void Main()
+        {
+            Manufacturer talka = new Talka("1", 40);
+            Alkogol vodka = talka.Create();
+            Manufacturer zhiguli = new Zhiguli("2", "светлое");
+            Alkogol pivo = zhiguli.Create();
+
+
+            BarFactory factory1 = new FirstFactory();
+            Koktel koktel1 = factory1.CreateKoktel();
+            Shot notebook1 = factory1.CreateShot();
+            koktel1.Pit();
+            notebook1.PitShot();
+
+            BarFactory factory2 = new SecondFactory(3, "апельсиновый");
+            Koktel koktel2 = factory2.CreateKoktel();
+            Shot shot2 = factory2.CreateShot();
+            koktel2.Pit();
+            shot2.PitShot();
+        }
+    }
+
+    abstract class Manufacturer
+    {
+        public string Name { get; set; }
+
+        public Manufacturer(string name)
+        {
+            Name = name;
+        }
+
+        abstract public Alkogol Create();
+    }
+
+    class Talka : Manufacturer
+    {
+        public int Gradus { get; set; }
+
+        public Talka(string name, int gradus) : base(name)
+        {
+            Gradus = gradus;
+        }
+
+        public override Alkogol Create()
+        {
+            return new Vodka(Gradus);
+        }
+    }
+
+    class Zhiguli : Manufacturer
+    {
+        public string Color { get; set; }
+
+        public Zhiguli(string name, string color) : base(name)
+        {
+            Color = color;
+        }
+
+        public override Alkogol Create()
+        {
+            return new Pivo(Color);
+        }
+    }
+
+    abstract class Alkogol
+    { }
+
+    class Vodka : Alkogol
+    {
+        public int Gradus;
+
+        public Vodka(int gradus)
+        {
+            Gradus = gradus;
+            Console.WriteLine($"Водка {Gradus} градусов");
+        }
+    }
+
+    class Pivo : Alkogol
+    {
+        public string Color;
+        public Pivo(string color)
+        {
+            Color = color;
+            Console.WriteLine($"Пиво {Color} нефильтрованное");
+        }
+    }
+
+
+
+    //Абстрактная фабрика
+
+    abstract class Koktel
+    {
+        public abstract void Pit();
+    }
+
+    abstract class Shot
+    {
+        public abstract void PitShot();
+    }
+    class Otvertka : Koktel
+    {
+        public string Sok { get; set; }
+        public Otvertka(string sok)
+        {
+            Sok = sok;
+        }
+        public override void Pit()
+        {
+            Console.WriteLine($"Пьет отвертку с {Sok} соком");
+        }
+    }
+
+    class SevSian : Koktel
+    {
+        public override void Pit()
+        {
+            Console.WriteLine("Пьет северное сияние");
+        }
+    }
+
+    class FireShot : Shot
+    {
+        public override void PitShot()
+        {
+            Console.WriteLine("Пьет горящий шот");
+        }
+    }
+
+    class SloiShot : Shot
+    {
+        public int Kol { get; set; }
+
+        public SloiShot(int kol)
+        {
+            Kol = kol;
+        }
+
+        public override void PitShot()
+        {
+            Console.WriteLine($"Пьет шот из {Kol} слоев");
+        }
+    }
+    abstract class BarFactory
+    {
+        public abstract Koktel CreateKoktel();
+        public abstract Shot CreateShot();
+    }
+
+    class FirstFactory : BarFactory
+    {
+        public override Koktel CreateKoktel()
+        {
+            return new SevSian();
+        }
+
+        public override Shot CreateShot()
+        {
+            return new FireShot();
+        }
+    }
+
+    class SecondFactory : BarFactory
+    {
+        public int Kol { get; set; }
+        public string Sok { get; set; }
+
+        public SecondFactory(int kol, string sok)
+        {
+            Kol = kol;
+            Sok = sok;
+        }
+        public override Koktel CreateKoktel()
+        {
+            return new Otvertka(Sok);
+        }
+
+        public override Shot CreateShot()
+        {
+            return new SloiShot(Kol);
+        }
+    }
+}
