@@ -1,0 +1,222 @@
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+
+namespace lab_singleton
+{
+    class Program
+    {
+        static void Main()
+        {
+            Smatrphone sp = new Smatrphone();
+            sp.Create("Android");
+            Console.WriteLine(sp.os.Name + " \n ");
+
+
+            IFnapit napit = new Kofe("Latte");
+            IFnapit clonednapit = napit.Clone();
+            napit.GetInfo();
+            clonednapit.GetInfo();
+
+            napit = new Tea("Зеленый");
+            clonednapit = napit.Clone();
+            napit.GetInfo();
+            clonednapit.GetInfo();
+
+
+            Barmen barmen = new Barmen();
+       
+            KoktelBuilder builder = new B52Builder();
+            B b52Koktel = barmen.Bake(builder);
+            Console.WriteLine(b52Koktel.ToString());
+          
+            builder = new B53Builder();
+            B b53Koktel = barmen.Bake(builder);
+            Console.WriteLine(b53Koktel.ToString());
+
+            builder = new B54Builder();
+            B b54Koktel = barmen.Bake(builder);
+            Console.WriteLine(b54Koktel.ToString());
+        }
+    }
+    class Smatrphone //синглетон
+    {
+        public OS os { get; set; }
+        public void Create(string name)
+        {
+            os = OS.getInstance(name);
+        }
+
+    }
+    class OS
+    {
+        private static OS instance;
+        public string Name { get; private set; }
+        protected OS(string name)
+        {
+            this.Name = name;
+        }
+        public static OS getInstance(string name)
+        {
+            if (instance == null)
+                instance = new OS(name);
+            return instance;
+        }
+    }
+
+
+    interface IFnapit //прототип
+    {
+        IFnapit Clone();
+        void GetInfo();
+    }
+
+    class Kofe : IFnapit
+    {
+        string vid;
+        public Kofe(string v)
+        {
+            vid = v;
+        }
+
+        public IFnapit Clone()
+        {
+            return new Kofe(this.vid);
+        }
+        public void GetInfo()
+        {
+            Console.WriteLine($"Сварено кофе {vid} \n");
+        }
+    }
+
+    class Tea : IFnapit
+    {
+        string color;
+        public Tea(string c)
+        {
+            color = c;
+        }
+
+        public IFnapit Clone()
+        {
+            return new Tea(this.color);
+        }
+        public void GetInfo()
+        {
+            Console.WriteLine($"Заварен {color} чай \n");
+        }
+    }
+
+
+  
+    class Kahlua //stroiteli
+    {}
+    class Baileys
+    { }
+    class Dop
+    {
+        public string Name { get; set; }
+    }
+
+    class B
+    {
+        public Kahlua Kahlua { get; set; }
+        public Baileys Baileys { get; set; }
+        public Dop Dop { get; set; }
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (Kahlua != null)
+                sb.Append("Кофейный ликер \n");
+            if (Baileys != null)
+                sb.Append("Бэйлис \n");
+            if (Dop != null)
+                sb.Append("Третий: " + Dop.Name + " \n");
+            return sb.ToString();
+        }
+    }
+    abstract class KoktelBuilder 
+    {
+        public B B { get; private set; }
+        public void CreateKoktel()
+        {
+            B = new B();
+        }
+        public abstract void SetKahlua();
+        public abstract void SetBaileys();
+        public abstract void SetDop();
+    }
+  
+    class Barmen
+    {
+        KoktelBuilder builder;
+        public Barmen(Builder builder)
+        {
+            this.builder = builder;
+        }
+        public B Bake(KoktelBuilder koktelBuilder)
+        {
+            koktelBuilder.CreateKoktel();
+            koktelBuilder.SetKahlua();
+            koktelBuilder.SetBaileys();
+            koktelBuilder.SetDop();
+            return koktelBuilder.B;
+        }
+    }
+   
+    class B52Builder : KoktelBuilder
+    {
+        public override void SetKahlua()
+        {
+            this.B.Kahlua = new Kahlua();
+        }
+
+        public override void SetBaileys()
+        {
+            this.B.Baileys = new Baileys();
+        }
+
+        public override void SetDop()
+        {
+            this.B.Dop = new Dop { Name = "GrandMarnier" };
+        }
+    }
+   
+    class B53Builder : KoktelBuilder
+    {
+        public override void SetKahlua()
+        {
+            this.B.Kahlua = new Kahlua();
+        }
+
+        public override void SetBaileys()
+        {
+            this.B.Baileys = new Baileys();
+        }
+
+        public override void SetDop()
+        {
+            this.B.Dop = new Dop { Name = "Vodka" };
+        }
+    }
+    class B54Builder : KoktelBuilder
+    {
+        public override void SetKahlua()
+        {
+            this.B.Kahlua = new Kahlua();
+        }
+
+        public override void SetBaileys()
+        {
+            this.B.Baileys = new Baileys();
+        }
+
+        public override void SetDop()
+        {
+            this.B.Dop = new Dop { Name = "Amaretto" };
+        }
+    }
+}
