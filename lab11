@@ -1,0 +1,237 @@
+using System;
+using System.CodeDom.Compiler;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Numerics;
+using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Bog Jesus = new Bog();
+        Voda voda = new Voda();
+        Jesus.Sozdatel(voda);
+        Vino vino = new Vino();
+        IVoda exploredev = new VodaVino(vino);
+        Jesus.Sozdatel(exploredev);
+        Console.WriteLine();
+
+        IInput gamepad = new GamePad();
+        Device consol = new Consol(gamepad);
+        consol.Print();
+        gamepad.Write("xyba");
+        IInput klava = new Klava();
+        Device computer = new Computer(klava);
+        computer.Print();
+        klava.Write("wasd");
+
+        MusicFactory fabrica = new MusicFactory();
+        Music Tr1 = fabrica.GetMusic("SektorGaza");
+        Tr1.Create("SektorGaza");
+
+        IZagruz filehran = new FileProxy();
+        filehran.Display("troyan.exe");
+        filehran.Display("laba.doc");
+        filehran.Display("troyan.exe");
+
+    }
+}
+
+//Адаптер
+interface IVoda
+{
+    void SozdVod();
+}
+class Voda : IVoda
+{
+    public void SozdVod()
+    {
+        Console.WriteLine("Вода...");
+    }
+}
+class Bog
+{
+    public void Sozdatel(IVoda vino)
+    {
+        vino.SozdVod();
+    }
+}
+interface IVino
+{
+    void SozdVino();
+}
+class Vino : IVino
+{
+    public void SozdVino()
+    {
+        Console.WriteLine("Вино...");
+    }
+}
+class VodaVino : IVoda 
+{
+    Vino vino;
+    public VodaVino(Vino temp)
+    {
+        vino = temp;
+    }
+    
+    public void SozdVod()
+    {
+        vino.SozdVino();
+    }
+}
+
+
+//Мост
+abstract class Device
+{
+    protected IInput output;
+
+    public Device(IInput output)
+    {
+        this.output = output;
+    }
+
+    public abstract void Print();
+}
+
+class Consol : Device
+{
+    public Consol(IInput output) : base(output) { }
+
+    public override void Print()
+    {
+        output.Write("Игра запущена на консоли");
+    }
+}
+
+class Computer : Device
+{
+    public Computer(IInput output) : base(output) { }
+
+    public override void Print()
+    {
+        output.Write("Игра запущена на компе");
+    }
+}
+
+interface IInput
+{
+    void Write(string upravlen);
+}
+
+class Klava : IInput
+{
+    public void Write(string upravlen)
+    {
+        Console.WriteLine($"Управление с клавиатуры: {upravlen}");
+    }
+}
+
+class GamePad : IInput
+{
+    public void Write(string upravlen)
+    {
+        Console.WriteLine($"Управление с геймпада: {upravlen}");
+    }
+}
+
+//Приспособленец 
+abstract class Music
+{
+    public abstract void Create(string ispolnit);
+}
+
+class ConkreteMusic : Music
+{
+    private string janre;
+    public ConkreteMusic(string janre)
+    {
+        this.janre = janre;
+    }
+
+    public override void Create(string ispolnit)
+    {
+        Console.WriteLine($"Играет {janre}");
+    }
+}
+
+class UnsharedConkreteMusic : Music
+{
+    private string ispolnit;
+
+    public override void 
+        Create(string ispolnit)
+    {
+        this.ispolnit = ispolnit;
+        Console.WriteLine($"Играет песня {ispolnit}");
+    }
+}
+
+class MusicFactory
+{
+    Hashtable musics = new Hashtable();
+
+    public Music GetMusic(string janre)
+    {
+        if (!musics.ContainsKey(janre))
+        {
+            Console.WriteLine("Я написал трек");
+            musics.Add(janre, new ConkreteMusic(janre));
+        }
+
+        return musics[janre] as Music;
+    }
+}
+
+//proxi
+
+interface IZagruz
+{
+    void Display(string filename);
+}
+
+class RealFile : IZagruz
+{
+    private string filename;
+
+    public RealFile(string filename)
+    {
+        this.filename = filename;
+        LoadFileFromDisk();
+    }
+
+    private void LoadFileFromDisk()
+    {
+        Console.WriteLine($"Новый файл, загрузка {filename}");
+    }
+
+    public void Display(string filename)
+    {
+        Console.WriteLine($"Файл в КЭШЕ {filename}");
+    }
+}
+class FileProxy : IZagruz
+{
+    private Dictionary<string, RealFile> fileCache;
+
+    public FileProxy()
+    {
+        fileCache = new Dictionary<string, RealFile>();
+    }
+
+    public void Display(string filename)
+    {
+        if (!fileCache.ContainsKey(filename))
+        {
+            fileCache[filename] = new RealFile(filename);
+        }
+        else
+        {
+            fileCache[filename].Display(filename);
+        }
+    }
+}
