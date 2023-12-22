@@ -1,0 +1,249 @@
+using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Numerics;
+using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Drug Misha = new AlkashDrug();
+        Misha = new DushevDrug(Misha);
+        Misha = new GeyDrug(Misha);
+        Console.WriteLine(Misha.Name);
+        Console.WriteLine(Misha.Kach());
+        Drug Vlad = new DolbaebDrug();
+        Vlad = new UmnDrug(Vlad);
+        Console.WriteLine(Vlad.Name);
+        Console.WriteLine(Vlad.Kach());
+        Console.WriteLine();
+
+
+        
+        Component rec = new Kofe("Рецепт");
+        Component Espresso = new Kofe("Кофейная основа");
+        Component Dobav = new Kofe("Добавки");
+        Component espresso_strana = new KofeRec("Страна зерен");
+        Component espresso_zern = new KofeRec("Сорт зерен");
+        Component espresso_obhgarka = new KofeRec("Обжарка");
+        Component Moloko = new KofeRec("Вид молока");
+        Component Sirop= new KofeRec("Вкус сиропа");
+        Espresso.Add(espresso_strana);
+        Espresso.Add(espresso_zern);
+        Espresso.Add(espresso_obhgarka);
+        Dobav.Add(Moloko);
+        Dobav.Add(Sirop);
+        rec.Add(Dobav);
+        rec.Add(Espresso);
+        rec.Print();
+
+        Console.WriteLine();
+
+        Sessia sessia = new Sessia();
+        Zachetka dolg = new Zachetka();
+        NalichStip stipend = new NalichStip();
+        Student Nikita = new Student(sessia, dolg, stipend);
+        Result Yanvar = new Result();
+        Yanvar.UGU(Nikita);
+    }
+}
+
+//Декоратор
+abstract class Drug
+{
+    public Drug(string n)
+    {
+        this.Name = n;
+    }
+    public string Name { get; protected set; }
+    public abstract string Kach();
+}
+
+class AlkashDrug : Drug
+{
+    public AlkashDrug() : base("Друг собутыльник")
+    { }
+    public override string Kach()
+    {
+        return "Всегда есть с кем выпить ";
+    }
+}
+class DolbaebDrug : Drug
+{
+    public DolbaebDrug() : base("Друг Долбаеб")
+    { }
+    public override string Kach()
+    {
+        return "Он вселый ";
+    }
+}
+
+abstract class DrugDecorator : Drug
+{
+    protected Drug drug;
+    public DrugDecorator(string n, Drug drug) : base(n)
+    {
+        this.drug = drug;
+    }
+}
+
+class DushevDrug : DrugDecorator
+{
+    public DushevDrug(Drug p) : base(p.Name + "душевный ", p)
+    { }
+
+    public override string Kach()
+    {
+        return drug.Kach() + "можно поговорить о жизни ";
+    }
+}
+
+class GeyDrug : DrugDecorator
+{
+    public GeyDrug(Drug p)
+        : base(p.Name + "играющий в компуктер (а может и гей) ", p)
+    { }
+
+    public override string Kach()
+    {
+        return drug.Kach() + "есть с кем поиграть по ночам ";
+    }
+}
+
+class UmnDrug : DrugDecorator
+{
+    public UmnDrug(Drug p)
+        : base(p.Name + "умный ", p)
+    { }
+
+    public override string Kach()
+    {
+        return drug.Kach() + "может помочь с лабами ";
+    }
+}
+//Компоновщик
+abstract class Component
+{
+    protected string name;
+
+    public Component(string name)
+    {
+        this.name = name;
+    }
+
+    public virtual void Add(Component component) { }
+
+    public virtual void Remove(Component component) { }
+
+    public virtual void Print()
+    {
+        Console.WriteLine(name);
+    }
+}
+class Kofe : Component
+{
+    private List<Component> components = new List<Component>();
+
+    public Kofe(string name) : base(name)
+    {
+    }
+
+    public override void Add(Component component)
+    {
+        components.Add(component);
+    }
+
+    public override void Remove(Component component)
+    {
+        components.Remove(component);
+    }
+
+    public override void Print()
+    {
+        Console.WriteLine("Кофе " + name);
+        Console.WriteLine("Добавить:");
+        for (int i = 0; i < components.Count; i++)
+        {
+            components[i].Print();
+        }
+    }
+}
+
+class KofeRec : Component
+{
+    public KofeRec(string name) : base(name)
+    { 
+    }
+}
+
+//Фасад
+class Sessia
+{
+    public void on()
+    {
+        Console.WriteLine("Идет сессия");
+    }
+    public void off()
+    {
+        Console.WriteLine("Сессия закончилась");
+    }
+}
+class Zachetka
+{
+    public void DolgYes()
+    {
+        Console.WriteLine("У вас имеются долги");
+    }
+    public void DolgNo()
+    {
+        Console.WriteLine("Долгов нет ссесия успешно закрыта");
+    }
+}
+class NalichStip
+{
+    public void No()
+    {
+        Console.WriteLine("Стипендии больше нет! Закройте все долги!");
+    }
+    public void Yes()
+    {
+        Console.WriteLine("Стипендия прийдет 25 числа");
+    }
+}
+
+class Student
+{
+    Sessia sessia;
+    Zachetka dolg;
+    NalichStip stipend;
+    public Student(Sessia sessia, Zachetka dolg, NalichStip stipend)
+    {
+        this.sessia = sessia;
+        this.dolg = dolg;
+        this.stipend = stipend;
+    }
+    public void Millioner()
+    {
+        sessia.off();
+        dolg.DolgNo();
+        stipend.Yes();
+    }
+    public void RIP()
+    {
+        sessia.on();
+        dolg.DolgYes();
+        stipend.No();
+    }
+}
+
+class Result
+{
+    public void UGU(Student facade)
+    {
+        facade.Millioner();
+        facade.RIP();
+    }
+}
