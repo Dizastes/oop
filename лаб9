@@ -1,0 +1,362 @@
+using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Numerics;
+using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("У вас началась сессия, что вы будете делать?");
+        Student student = new Student(true, true, true);
+        Vihod alcoVihod = new AlcoVihod();
+        Vihod suisVihod = new SuisVihod();
+        Vihod drocplakVihod = new DrocPlakVihod();
+        alcoVihod.Successor = drocplakVihod;
+        drocplakVihod.Successor = suisVihod;
+        alcoVihod.Hod(student);
+        Console.WriteLine();
+
+
+        ITStarosta vlada = new ITStarosta();
+        Ludi Samarina = new RukovoditelLudi(vlada);
+        Ludi Safonov = new PrepodavatelLudi(vlada);
+        Ludi g1521b = new GrupaLudi(vlada);
+        vlada.Rukovoditel = Samarina;
+        vlada.Prepodavatel = Safonov;
+        vlada.Grupa = g1521b;
+        Samarina.Send("Нужно принять лабы у студентов и дать дедлайн, скоро экзамены");
+        Safonov.Send("Вы пидорасы");
+        g1521b.Send("Мы в пизде");
+        Console.WriteLine();
+
+
+        BesedaGrup Obiavlenie = new BesedaGrup();
+        Studentn Student1 = new Studentn("Student1");
+        Studentn Student2 = new Studentn("Student2");
+        Obiavlenie.AddObserver(Student1);
+        Obiavlenie.AddObserver(Student2);
+
+        Obiavlenie.NewObiavlenie("Завтра дедлайн по ооп");
+        Obiavlenie.RemoveObserver(Student2);
+        Obiavlenie.NewObiavlenie("Мы в жопе");
+        Console.WriteLine();
+
+
+
+
+        var structure = new ObjectStructure();
+        structure.Add(new Nikita(1100, 280, 11, 5));
+        structure.Add(new Vlad(800, 620, 8, 6));
+        structure.Accept(new OOP());
+        structure.Accept(new Seti());
+        Console.WriteLine();
+
+        Console.Read();
+
+
+    }
+}
+
+//цепочки обязанностей
+class Student
+{
+    public bool Alcogolizm { get; set; }
+    public bool Povesitsia { get; set; }
+    public bool DrochitAndPlakat { get; set; }
+    public Student(bool alc, bool pov, bool dp)
+    {
+        Alcogolizm = alc;
+        Povesitsia = pov;
+        DrochitAndPlakat = dp;
+    }
+}
+abstract class Vihod
+{
+    public Vihod Successor { get; set; }
+    public abstract void Hod(Student student);
+}
+
+class AlcoVihod : Vihod
+{
+    public override void Hod(Student student)
+    {
+        if (student.Alcogolizm == true)
+            Console.WriteLine("Спиться...зато вы счастливы");
+        if (Successor != null)
+            Successor.Hod(student);
+    }
+}
+
+class DrocPlakVihod : Vihod
+{
+    public override void Hod(Student student)
+    {
+        if (student.DrochitAndPlakat == true)
+            Console.WriteLine("Дрочить и плакать...Тоже вариант");
+        if (Successor != null)
+            Successor.Hod(student);
+    }
+}
+
+class SuisVihod : Vihod
+{
+    public override void Hod(Student student)
+    {
+        if (student.Povesitsia == true)
+            Console.WriteLine("Повеситься....RIP");
+        if (Successor != null)
+            Successor.Hod(student);
+    }
+}
+
+
+
+//медиаторы
+abstract class Starosta
+{
+    public abstract void Send(string msg, Ludi ludi);
+}
+abstract class Ludi
+{
+    protected Starosta vlada;
+
+    public Ludi(Starosta vlada)
+    {
+        this.vlada = vlada;
+    }
+
+    public virtual void Send(string message)
+    {
+        vlada.Send(message, this);
+    }
+    public abstract void Notify(string message);
+}
+
+class RukovoditelLudi : Ludi
+{
+    public RukovoditelLudi(Starosta vlada)
+        : base(vlada)
+    { }
+
+    public override void Notify(string message)
+    {
+        Console.WriteLine("Передать Самариной: " + message);
+    }
+}
+
+class PrepodavatelLudi : Ludi
+{
+    public PrepodavatelLudi(Starosta vlada)
+        : base(vlada)
+    { }
+
+    public override void Notify(string message)
+    {
+        Console.WriteLine("Поговорить с преподом: " + message);
+    }
+}
+
+class GrupaLudi : Ludi
+{
+    public GrupaLudi(Starosta vlada)
+        : base(vlada)
+    { }
+
+    public override void Notify(string message)
+    {
+        Console.WriteLine("Вынести мозги группе: " + message);
+    }
+}
+
+class ITStarosta : Starosta
+{
+    public Ludi Rukovoditel { get; set; }
+    public Ludi Prepodavatel { get; set; }
+    public Ludi Grupa { get; set; }
+    public override void Send(string msg, Ludi ludi)
+    {
+        if (Rukovoditel == ludi)
+            Prepodavatel.Notify(msg);
+        else if (Prepodavatel == ludi)
+            Grupa.Notify(msg);
+        else if (Grupa == ludi)
+            Rukovoditel.Notify(msg);
+    }
+}
+
+
+//наблюдатель
+
+interface IObserver
+{
+    void Update(string ob);
+}
+
+interface IObservable
+{
+    void AddObserver(IObserver observer);
+    void RemoveObserver(IObserver observer);
+    void Notify();
+}
+
+class BesedaGrup : IObservable
+{
+    private List<IObserver> subscribses;
+    private string obText;
+
+    public BesedaGrup()
+    {
+        subscribses = new List<IObserver>();
+    }
+
+    public void AddObserver(IObserver sub)
+    {
+        subscribses.Add(sub);
+    }
+
+    public void RemoveObserver(IObserver sub)
+    {
+        subscribses.Remove(sub);
+    }
+
+    public void Notify()
+    {
+        foreach (IObserver temp in subscribses)
+        {
+            temp.Update(obText);
+        }
+    }
+
+    public void NewObiavlenie(string ob)
+    {
+        obText = ob;
+        Notify();
+    }
+}
+
+class Studentn : IObserver
+{
+    public string name { get; set; }
+
+    public Studentn(string name)
+    {
+        this.name = name;
+    }
+    public void Update(string ob)
+    {
+        Console.WriteLine($"{name} Новое сообщение!");
+        Console.WriteLine(ob);
+    }
+}
+
+//Посетитель
+abstract class Visitor
+{
+    public abstract void Vlad(Vlad stdn);
+
+    public abstract void Nikita(Nikita stdn);
+
+}
+
+class OOP : Visitor
+{
+   
+    public override void Nikita(Nikita stdn)
+    {
+        stdn.OperationB();
+    }
+    public override void Vlad(Vlad stdn)
+    {
+        stdn.OperationA();
+    }
+}
+
+class Seti : Visitor
+{
+    public override void Nikita(Nikita stdn)
+    {
+        if (stdn.BalovSeti < 600)
+        {
+            Console.WriteLine("Nikita: В сетевой жопе");
+        }
+    }
+   
+    public override void Vlad(Vlad stdn)
+    {
+        Console.WriteLine("Vlad: Спидран по сетям помогайте другим");
+    }
+}
+
+class ObjectStructure 
+{
+    List<Company> elements = new List<Company>();
+    public void Add(Company element)
+    {
+        elements.Add(element);
+    }
+    public void Remove(Company element)
+    {
+        elements.Remove(element);
+    }
+    public void Accept(Visitor visitor)
+    {
+        foreach (Company element in elements)
+            element.Accept(visitor);
+    }
+}
+
+abstract class Company 
+{
+    public int BalovOOP { get; set; }
+    public int BalovSeti { get; set; }
+    public int LabO { get; set; }
+    public int LabS { get; set; }
+
+    public Company(int BalovOOP, int BalovSeti, int LabO, int LabS)
+    {
+        this.BalovOOP = BalovOOP;
+        this.BalovSeti = BalovSeti;
+        this.LabO = LabO;
+        this.LabS = LabS;
+    }
+    public abstract void Accept(Visitor visitor);
+}
+
+class Vlad : Company
+{
+    public Vlad(int BalovOOP, int BalovSeti, int LabO, int LabS) : base(BalovOOP, BalovSeti, LabO, LabS) { }
+
+    public override void Accept(Visitor visitor)
+    {
+        visitor.Vlad(this);
+    }
+    public void OperationA()
+    {
+        Console.WriteLine("Vlad :У вас дедлайн по ООП");
+        if (LabS < 11)
+        {
+            Console.WriteLine("Вам пизда");
+        }
+        else
+        {
+            Console.WriteLine("Вас пронесло");
+        }
+    }
+}
+
+class Nikita : Company
+{
+    public Nikita(int BalovOOP, int BalovSeti, int LabO, int LabS) : base(BalovOOP, BalovSeti, LabO, LabS) { }
+    public override void Accept(Visitor visitor)
+    {
+        visitor.Nikita(this);
+    }
+    public void OperationB()
+    {
+        Console.WriteLine("Nikita: у вас все хорошо готовьтесь к экзамену");
+    }
+}
